@@ -28,7 +28,8 @@ import com.google.common.annotations.Beta;
  * In order to define these operations more precisely, some way of representing the sets is needed.
  * One common approach is to select a fixed element of each set, called its representative, to
  * represent the set as a whole. Then, Find(x) returns the representative of the set that x belongs
- * to, and Union takes two set representatives as its arguments.
+ * to, and Union takes two set representatives as its arguments.  This is the approach this implementation
+ * uses.
  * 
  * This implementation supports essentially constant time find() and union() lookups thanks to 
  * path compression & union by rank.
@@ -103,6 +104,7 @@ public class UnionFind<T> {
   private UnionFindEntry findParent(UnionFindEntry entry) {
     UnionFindEntry rep = entry.root;
     if (rep.root != rep) {
+      // Path compression... 
       rep = findParent(rep);
       entry.root = rep;
     }
@@ -139,6 +141,12 @@ public class UnionFind<T> {
     if (entry1 == entry2)
       return;  // Already in the same set 
     
+    // Union by rank.
+    // Ensures we don't grow the tree unnecessarily.
+    // We want entry1's height to not increase, that way the
+    // tree's height will always be ~log(n).  This along with
+    // path compression has find() and join() operate in effectively
+    // amortised constant time.
     if (entry1.size < entry2.size) {
       UnionFindEntry temp = entry1;
       entry1 = entry2;
@@ -152,7 +160,8 @@ public class UnionFind<T> {
   }
   
   /**
-   * Returns the Set of members that the given member belongs to.  
+   * Returns the Set of members that the given member belongs to.  Note this runs in O(n)
+   * time to build the set from our internal representation.
    * 
    * If e is not a member of this UnionFind then an IllegalArgumentException is thrown.
    */
