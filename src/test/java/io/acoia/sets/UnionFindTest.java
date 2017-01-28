@@ -3,6 +3,10 @@ package io.acoia.sets;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -19,9 +23,9 @@ public class UnionFindTest {
     }
     
     for (int i = -99; i < 100; i++) {
-      assertEquals((int) i, (int) uf.find(i));
-      assertTrue(uf.equivalent(i, i));
-      assertFalse(uf.equivalent(i, i-1));
+      assertEquals((int) i, (int) uf.findRoot(i));
+      assertTrue(uf.sameSet(i, i));
+      assertFalse(uf.sameSet(i, i-1));
     }
   }
   
@@ -30,9 +34,9 @@ public class UnionFindTest {
     UnionFind<Integer> uf = new UnionFind<>();
     uf.addMember(1);
     uf.addMember(null);
-    assertNull(uf.find(null));
-    uf.union(null, 1);
-    uf.equivalent(null, 1);
+    assertNull(uf.findRoot(null));
+    uf.join(null, 1);
+    uf.sameSet(null, 1);
   }
 
   @Test
@@ -47,27 +51,27 @@ public class UnionFindTest {
     }
     
     for (int i = -99; i < 100; i++) {
-      uf.union(i-1, i);
-      assertTrue(uf.equivalent(-100, i));
+      uf.join(i-1, i);
+      assertTrue(uf.sameSet(-100, i));
       if (i < 99)
-        assertFalse(uf.equivalent(-100, i+1));
+        assertFalse(uf.sameSet(-100, i+1));
     }
     
     for (int i = -100; i < 100; i++) {
-      assertTrue(uf.equivalent(0, i));
+      assertTrue(uf.sameSet(0, i));
     }
   }
   
   @Test
   public void testPathCompressionBranch() {
     UnionFind<Integer> uf = new UnionFind<>(Arrays.asList(1, 2, 3, 4, 5, 6));
-    uf.union(1, 2);
-    uf.union(3, 4);
-    uf.union(5, 6);
-    uf.union(2, 3);
-    uf.union(4, 5);
-    assertEquals((Integer) 1, uf.find(2));
-    assertEquals((Integer) 1, uf.find(5));
+    uf.join(1, 2);
+    uf.join(3, 4);
+    uf.join(5, 6);
+    uf.join(2, 3);
+    uf.join(4, 5);
+    assertEquals((Integer) 1, uf.findRoot(2));
+    assertEquals((Integer) 1, uf.findRoot(5));
     
   }
   
@@ -83,7 +87,7 @@ public class UnionFindTest {
     
     assertEquals(6, uf.size());
     
-    uf.union(1, 6);
+    uf.join(1, 6);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 3 } );
@@ -91,7 +95,7 @@ public class UnionFindTest {
     Arrays.equals(uf.members(5).toArray(new Integer[0]), new Integer[] { 5 } );
     Arrays.equals(uf.members(6).toArray(new Integer[0]), new Integer[] { 1, 6 } );
 
-    uf.union(6, 6);
+    uf.join(6, 6);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 3 } );
@@ -99,7 +103,7 @@ public class UnionFindTest {
     Arrays.equals(uf.members(5).toArray(new Integer[0]), new Integer[] { 5 } );
     Arrays.equals(uf.members(6).toArray(new Integer[0]), new Integer[] { 1, 6 } );
 
-    uf.union(6, 5);
+    uf.join(6, 5);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6, 5 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 3 } );
@@ -107,7 +111,7 @@ public class UnionFindTest {
     Arrays.equals(uf.members(5).toArray(new Integer[0]), new Integer[] { 1, 6, 5 } );
     Arrays.equals(uf.members(6).toArray(new Integer[0]), new Integer[] { 1, 6, 5 } );
 
-    uf.union(4, 6);
+    uf.join(4, 6);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 3 } );
@@ -115,7 +119,7 @@ public class UnionFindTest {
     Arrays.equals(uf.members(5).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
     Arrays.equals(uf.members(6).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
 
-    uf.union(3, 2);
+    uf.join(3, 2);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 3, 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 3, 2 } );
@@ -123,7 +127,7 @@ public class UnionFindTest {
     Arrays.equals(uf.members(5).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
     Arrays.equals(uf.members(6).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4 } );
     
-    uf.union(3, 6);
+    uf.join(3, 6);
     Arrays.equals(uf.members(1).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4, 3, 2 } );
     Arrays.equals(uf.members(2).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4, 3, 2 } );
     Arrays.equals(uf.members(3).toArray(new Integer[0]), new Integer[] { 1, 6, 5, 4, 3, 2 } );
@@ -140,14 +144,14 @@ public class UnionFindTest {
     UnionFind<Integer> uf = new UnionFind<>();
     uf.addMember(1);
     try {
-      uf.equivalent(1, 2);
+      uf.sameSet(1, 2);
       fail("Expected an IllegalArgumentException as 2 is not in the UnionFind");
     }
     catch (IllegalArgumentException e) {
       // Expected
     }
     try {
-      uf.find(2);
+      uf.findRoot(2);
       fail("Expected an IllegalArgumentException as 2 is not in the UnionFind");
     }
     catch (IllegalArgumentException e) {
@@ -156,6 +160,38 @@ public class UnionFindTest {
 
   }
   
+  @Test
+  public void testUnionFindContains() {
+    UnionFind<Integer> uf = new UnionFind<>(2);
+    uf.addMember(1);
+    assertFalse(uf.contains(2));
+    uf.addMember(2);
+    assertTrue(uf.contains(2));
+    uf.join(1, 2);
+    assertTrue(uf.contains(1));
+    assertTrue(uf.contains(2));
+  }
+  
+  @Test
+  public void testUnionFindSets() {
+    UnionFind<Integer> uf = new UnionFind<>(2);
+    uf.addMember(1);
+    Collection<Set<Integer>> sets = uf.sets();
+    assertEquals(1, sets.size());
+    assertTrue(sets.contains(new HashSet<Integer>(Collections.singleton(1))));
+    
+    uf.addMember(2);
+    sets = uf.sets();
+    assertEquals(2, sets.size());
+    assertTrue(sets.contains(new HashSet<Integer>(Collections.singleton(1))));
+    assertTrue(sets.contains(new HashSet<Integer>(Collections.singleton(2))));
+    
+    uf.join(1, 2);
+    sets = uf.sets();
+    assertEquals(1, sets.size());
+    assertTrue(sets.contains(new HashSet<Integer>(Arrays.asList(1, 2))));
+
+  }
 
 
 }
