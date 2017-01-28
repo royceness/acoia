@@ -72,7 +72,6 @@ public class UnionFindTest {
     uf.join(4, 5);
     assertEquals((Integer) 1, uf.findRoot(2));
     assertEquals((Integer) 1, uf.findRoot(5));
-    
   }
   
   @Test

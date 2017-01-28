@@ -50,7 +50,7 @@ public class UnionFind<T> {
     UnionFindEntry root = this;
     UnionFindEntry tail = this;
     T entry;
-    int size = 1;
+    int rank = 1;
     UnionFindEntry next = null;
     
     public UnionFindEntry(T member) {
@@ -147,7 +147,7 @@ public class UnionFind<T> {
     // tree's height will always be ~log(n).  This along with
     // path compression has find() and join() operate in effectively
     // amortised constant time.
-    if (entry1.size < entry2.size) {
+    if (entry1.rank < entry2.rank) {
       UnionFindEntry temp = entry1;
       entry1 = entry2;
       entry2 = temp;
@@ -155,7 +155,8 @@ public class UnionFind<T> {
     
     entry1.tail.next = entry2;
     entry1.tail = entry2.tail;
-    entry1.size += entry2.size;
+    if (entry1.rank == entry2.rank)
+      entry1.rank++;
     entry2.root = entry1;
   }
   
@@ -171,7 +172,7 @@ public class UnionFind<T> {
   }
 
   private Set<T> getMembers(UnionFindEntry entry) {
-    Set<T> result = new HashSet<>(entry.size);
+    Set<T> result = new HashSet<>(size());
     while (entry != null) {
       result.add(entry.entry);
       entry = entry.next;
