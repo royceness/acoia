@@ -1,6 +1,5 @@
 # acoia
 A collection of interesting algorithms
-- UnionFind 
+- UnionFind / disjoint sets
+- Kruskal's minimum spanning tree
 
-Coming soon:
-Kruscal's algorithm
