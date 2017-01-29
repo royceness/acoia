@@ -27,7 +27,7 @@ public class MinimumSpanningTree {
    * List<EndpointPair<N>> sortedEdges). Due to the need to sort the edges this method requires edge
    * values in the graph to implement Comparable.
    * 
-   * Due to the need to sort this algorithm runs in O(E log(E)) time.
+   * Due to the need to sort this method sorts the edges (O(E log(E))) before calling Kruskal's (O(E α(V))) .
    */
   public static <N, E extends Comparable<E>> ValueGraph<N, E> kruskals(ValueGraph<N, E> g) {
     Set<EndpointPair<N>> edges = g.edges();
